@@ -1,8 +1,8 @@
-:- module(selector, [
+:- module(element_selector, [
   select/3
 ]).
 
-:- use_module(matcher, [matches/4]).
+:- use_module(element_matcher, [matches/4]).
 
 select([], _, []).
 select(_, [], []).

@@ -1,29 +1,19 @@
-:- module(query, [
-  parse_query/2
+:- module(selector, [
+  parse_query/2,
+  selector//1
 ]).
 
 :- use_module('../../utility/dcg').
 :- use_module(identifier).
-:- use_module(whitespace, [
-  whitespaces//0,
-  whitespaces//1,
-  whitespace//0
-]).
+:- use_module(whitespace, [whitespaces//1]).
+:- use_module(pseudo_selector).
 
-simple_selector_operator(id) --> "#".
-simple_selector_operator(class) --> ".".
+selector_operator(id) --> "#".
+selector_operator(class) --> ".".
 
-combinator_operator(child) -->
-  whitespaces,
-  ">".
-combinator_operator(adjacent) -->
-  whitespaces,
-  "+".
-combinator_operator(sibling) -->
-  whitespaces,
-  "~".
-combinator_operator(descendant) -->
-  whitespaces([required]).
+left_bracket --> "[".
+
+right_bracket --> "]".
 
 attribute_operator(equals) --> "=".
 attribute_operator(contains) --> "*=".
@@ -35,21 +25,32 @@ attribute_operator(equals_before_hyphen) --> "|=".
 attribute_option(case_insensitive) --> "i"; "I".
 attribute_option(case_sensitive) --> "s"; "S".
 
-left_bracket --> "[".
-right_bracket --> "]".
+combinator_operator(child) -->
+  whitespaces([no_new_line]),
+  ">".
+combinator_operator(adjacent) -->
+  whitespaces([no_new_line]),
+  "+".
+combinator_operator(sibling) -->
+  whitespaces([no_new_line]),
+  "~".
+combinator_operator(descendant) -->
+  whitespaces([no_new_line, required]).
 
-pseudo_selector_operator --> ":".
-left_parenthesis --> "(".
-right_parenthesis --> ")".
-
-all_selector_operator --> "*".
+all_operator --> "*".
 
 selector_separator --> ",".
 
+selectors([]) --> [].
 selectors([Selector|Selectors]) -->
   selector(Selector),
-  selector_separator,
-  selectors(Selectors).
+  (
+    selector_separator ->
+      selectors(Selectors);
+      {
+        Selectors = []
+      }
+  ).
 selectors([Selector]) -->
   selector(Selector).
 
@@ -57,11 +58,12 @@ selector(Selector) -->
   selector(descendant, Selector).
 
 selector(Type, selector(Type, SimpleSelectors, Combinator)) -->
-  whitespaces,
+  whitespaces([no_new_line]),
   simple_selectors(SimpleSelectors),
   combinator(Combinator),
-  whitespaces.
+  whitespaces([no_new_line]).
 
+simple_selectors([]) --> [].
 simple_selectors([SimpleSelector|SimpleSelectors]) -->
   simple_selector(SimpleSelector),
   simple_selectors(SimpleSelectors).
@@ -69,26 +71,24 @@ simple_selectors([SimpleSelector]) -->
   simple_selector(SimpleSelector).
 
 simple_selector(SimpleSelector) -->
-  simple_selector_operator(Type),
+  selector_operator(Type),
   identifier(Identifier),
   { SimpleSelector =.. [Type, Identifier] }.
 simple_selector(attribute(Name, Operator, Value, Options)) -->
   left_bracket,
-  whitespaces,
+  whitespaces([no_new_line]),
   identifier(Name),
-  whitespaces,
+  whitespaces([no_new_line]),
   attribute_operator(Operator),
-  whitespaces,
+  whitespaces([no_new_line]),
   quoted_identifier(Value),
-  whitespaces,
+  whitespaces([no_new_line]),
   attribute_options(Options),
-  whitespaces,
+  whitespaces([no_new_line]),
   right_bracket.
-simple_selector(pseudo_class(Name, Parameter)) -->
-  pseudo_selector_operator,
-  identifier(Name),
-  pseudo_selector_parameter(Parameter).
-simple_selector(all) --> all_selector_operator.
+simple_selector(PseudoSelector) -->
+  pseudo_selector(PseudoSelector).
+simple_selector(all) --> all_operator.
 simple_selector(tag(Name)) --> identifier(Name).
 
 attribute_options([Option|Options]) -->
@@ -96,26 +96,11 @@ attribute_options([Option|Options]) -->
   attribute_options(Options).
 attribute_options([]) --> "", !.
 
-% Here it cannot be invoked the 'simple_selector' always
-% it should be pseudo-class dependent, because:
-%     :not(Selector) must be parsed with 'simple_selector'
-% But :nth-child(Expression) must be parsed for an Expression and no Selector
-% And :checked has no attribute at all.
-%
-% So it needs to be Pseudo-Class dependent!!!
-pseudo_selector_parameter(Parameter) -->
-  left_parenthesis,
-  whitespaces,
-  simple_selector(Parameter),
-  whitespaces,
-  right_parenthesis.
-pseudo_selector_parameter(none) --> "", !.
-
 combinator(Combinator) -->
   combinator_operator(Type),
-  whitespaces,
+  whitespaces([no_new_line]),
   selector(Type, Combinator).
 combinator(none) --> "", !.
 
 parse_query(Query, Selectors) :-
-  parse(Query, query:selectors(Selectors)).
+  parse(Query, selector:selectors(Selectors)).

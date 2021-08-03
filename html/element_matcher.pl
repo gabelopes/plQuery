@@ -1,4 +1,4 @@
-:- module(matcher, [
+:- module(element_matcher, [
   match/3,
   matches/4
 ]).
