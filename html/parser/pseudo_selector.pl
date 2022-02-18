@@ -101,5 +101,9 @@ prepare_predicate(Functor, Arguments, Predicate) :-
 
 direction(ltr) --> "ltr".
 direction(rtl) --> "ltr".
+direction(_) --> {
+  writeln("Could not recognize provided direction, value should be either 'ltr' or 'rtl'."),
+  fail, !
+}.
 
 language(en) --> "en".
