@@ -41,7 +41,7 @@ all_operator --> "*".
 
 selector_separator --> ",".
 
-selectors([]) --> [].
+selectotrs([], [], []).
 selectors([Selector|Selectors]) -->
   selector(Selector),
   (
@@ -53,29 +53,44 @@ selectors([Selector|Selectors]) -->
   ).
 selectors([Selector]) -->
   selector(Selector).
+selectors([]) --> "".
 
 selector(Selector) -->
   selector(descendant, Selector).
 
-selector(Type, selector(Type, SimpleSelectors, Combinator)) -->
+selector(Type, selector(Type, CompoundSelectors, Combinator)) -->
   whitespaces([no_new_line]),
-  simple_selectors(SimpleSelectors),
+  compound_selectors(CompoundSelectors),
+  whitespaces([no_new_line]),
   combinator(Combinator),
   whitespaces([no_new_line]).
 
-simple_selectors([]) --> [].
-simple_selectors([SimpleSelector|SimpleSelectors]) -->
-  simple_selector(SimpleSelector),
-  simple_selectors(SimpleSelectors).
-simple_selectors([SimpleSelector]) -->
+compound_selectors([], [], []).
+compound_selectors([CompoundSelector|CompoundSelectors]) -->
+  compound_selector(CompoundSelector), !,
+  compound_selectors(CompoundSelectors).
+compound_selectors([CompoundSelector]) -->
+  compound_selector(CompoundSelector).
+compound_selectors([]) --> "".
+
+compound_selector(SimpleSelector:PseudoSelectors) -->
+  simple_selector(SimpleSelector), !,
+  pseudo_selectors(PseudoSelectors).
+compound_selector(SimpleSelector) -->
   simple_selector(SimpleSelector).
 
+pseudo_selectors([], [], []).
+pseudo_selectors([PseudoSelector|PseudoSelectors]) -->
+  pseudo_selector(PseudoSelector), !,
+  pseudo_selectors(PseudoSelectors).
+pseudo_selectors([]) --> "".
+
 simple_selector(SimpleSelector) -->
-  selector_operator(Type),
+  selector_operator(Type), !,
   identifier(Identifier),
   { SimpleSelector =.. [Type, Identifier] }.
 simple_selector(attribute(Name, Operator, Value, Options)) -->
-  left_bracket,
+  left_bracket, !,
   whitespaces([no_new_line]),
   identifier(Name),
   whitespaces([no_new_line]),
@@ -86,18 +101,17 @@ simple_selector(attribute(Name, Operator, Value, Options)) -->
   attribute_options(Options),
   whitespaces([no_new_line]),
   right_bracket.
-simple_selector(PseudoSelector) -->
-  pseudo_selector(PseudoSelector).
-simple_selector(all) --> all_operator.
-simple_selector(tag(Name)) --> identifier(Name).
+simple_selector(all) --> all_operator, !.
+simple_selector(tag(Name)) --> identifier(Name), !.
+simple_selector(all) --> "", !.
 
 attribute_options([Option|Options]) -->
-  attribute_option(Option),
+  attribute_option(Option), !,
   attribute_options(Options).
 attribute_options([]) --> "", !.
 
 combinator(Combinator) -->
-  combinator_operator(Type),
+  combinator_operator(Type), !,
   whitespaces([no_new_line]),
   selector(Type, Combinator).
 combinator(none) --> "", !.
