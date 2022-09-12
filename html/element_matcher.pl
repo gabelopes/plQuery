@@ -1,41 +1,57 @@
 :- module(element_matcher, [
-  match/3,
-  matches/4
+  match/4,
+  matches/5
 ]).
 
 :- use_module(library(dialect/ifprolog), [atom_split/3]).
 
-matches(_, _, [], []).
-matches(Siblings, Element, [selector(Type, SimpleSelectors, Combinator)|Selectors], [selector(Type, SimpleSelectors, Combinator)|Matches]) :-
-  match(Siblings, Element, SimpleSelectors),
-  matches(Siblings, Element, Selectors, Matches).
-matches(Siblings, Element, [_|Selectors], Matches) :-
-  matches(Siblings, Element, Selectors, Matches).
+matches(_, _, _, [], []).
+matches(Siblings, Position, Element, [selector(Type, SimpleSelectors, Combinator)|Selectors], [selector(Type, SimpleSelectors, Combinator)|Matches]) :-
+  match(Siblings, Position, Element, SimpleSelectors),
+  matches(Siblings, Position, Element, Selectors, Matches).
+matches(Siblings, Position, Element, [_|Selectors], Matches) :-
+  matches(Siblings, Position, Element, Selectors, Matches).
 
-match(_, _, []).
-match(Siblings, element(Tag, Attributes, _), [Selector|Selectors]) :-
-  match_selector(Siblings, Tag, Attributes, Selector),
-  match(Siblings, element(Tag, Attributes, _), Selectors).
+match(_, _, _, []).
+match(Siblings, Position, Element, [Selector:PseudoClasses|Selectors]) :-
+  match_selector(Siblings, Position, Element, Selector),
+  match_pseudo_classes(Siblings, Position, Element, Selector, PseudoClasses),
+  match(Siblings, Position, Element, Selectors).
+match(Siblings, Position, Element, [Selector|Selectors]) :-
+  match_selector(Siblings, Position, Element, Selector),
+  match(Siblings, Position, Element, Selectors).
 
 match_selector(_, _, _, all).
 
-match_selector(_, Tag, _, tag(Tag)).
+match_selector(_, _, element(Tag, _, _), tag(Tag)).
 
-match_selector(_, _, Attributes, id(Id)) :-
+match_selector(_, _, element(_, Attributes, _), id(Id)) :-
   get_attribute(Attributes, id, Id).
 
-match_selector(_, _, Attributes, class(ClassName)) :-
+match_selector(_, _, element(_, Attributes, _), class(ClassName)) :-
   get_attribute(Attributes, class, Class),
   atom_split(Class, ' ', Classes),
   member(ClassName, Classes).
 
-match_selector(_, _, Attributes, attribute(Name, Operator, ComparingValue, _)) :-
+match_selector(_, _, element(_, Attributes, _), attribute(Name, Operator, ComparingValue, _)) :-
   get_attribute(Attributes, Name, Value),
   compare_attribute_value(Value, Operator, ComparingValue).
 
 % Pseudo Classes
 % In order to make the Pseudo-Classes matchers, please read the comment in query.pl
-match_selector(Siblings, Tag, Attributes, pseudo_class('nth-child', [Expression])).
+match_pseudo_classes(_, _, _, _, []).
+match_pseudo_classes(Siblings, Position, Element, Selector, [PseudoClass|PseudoClasses]) :-
+  match_pseudo_class(Siblings, Position, Element, Selector, PseudoClass),
+  match_pseudo_classes(Siblings, Position, Element, Selector, PseudoClasses).
+
+match_pseudo_class(_, Position, _, _, nth_child(nth(A, B))) :-
+  N is (Position - B) / A,
+  integer(N).
+
+match_pseudo_class(_, 1, _, _, first_child).
+
+match_pseudo_class(Siblings, Position, _, _, last_child) :-
+  length(Siblings, Position).
 
 compare_attribute_value(Value, equals, Value).
 compare_attribute_value(Value, contains, ComparingValue) :-
