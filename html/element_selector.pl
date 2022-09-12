@@ -2,38 +2,41 @@
   select/3
 ]).
 
-:- use_module(element_matcher, [matches/4]).
+:- use_module(element_matcher, [matches/5]).
 
 select([], _, []).
 select(_, [], []).
 select(Dom, Selectors, Results) :-
   is_list(Dom), !,
-  select(Dom, Dom, Selectors, Results).
+  select(Dom, 1, Dom, Selectors, Results).
 select(Element, Selectors, Results) :-
   select([Element], Selectors, Results).
 
-select(_, [], _, []).
-select(_, _, [], []).
-select(Context, [Element|Siblings], Selectors, Results) :-
+select(_, _, [], _, []).
+select(_, _, _, [], []).
+select(Context, Position, [Element|Siblings], Selectors, Results) :-
   Element = element(_, _, _),
-  matches(Context, Element, Selectors, MatchedSelectors),
-  combine(Context, [Element|Siblings], Selectors, MatchedSelectors, CombineResults),
-  select(Context, Siblings, Selectors, SiblingsResults), !,
+  matches(Context, Position, Element, Selectors, MatchedSelectors),
+  combine(Context, Position, [Element|Siblings], Selectors, MatchedSelectors, CombineResults),
+  NextPosition is Position + 1,
+  select(Context, NextPosition, Siblings, Selectors, SiblingsResults), !,
   append(CombineResults, SiblingsResults, Results).
-select(Context, [_|Siblings], Selectors, Results) :-
-  select(Context, Siblings, Selectors, Results).
+select(Context, Position, [_|Siblings], Selectors, Results) :-
+  NextPosition is Position + 1,
+  select(Context, NextPosition, Siblings, Selectors, Results).
 
-combine(_, [], _, _, []).
-combine(_, [element(_, _, Children)|_], Selectors, [], Results) :-
+combine(_, _, [], _, _, []).
+combine(_, _, [element(_, _, Children)|_], Selectors, [], Results) :-
   filter_selectors(Selectors, [descendant], DescendantSelectors),
-  select(Children, Children, DescendantSelectors, Results).
-combine(Context, [element(Tag, Attributes, Children), Sibling|Siblings], Selectors, MatchedSelectors, Results) :-
+  select(Children, 1, Children, DescendantSelectors, Results).
+combine(Context, Position, [element(Tag, Attributes, Children), Sibling|Siblings], Selectors, MatchedSelectors, Results) :-
   collect_element(element(Tag, Attributes, Children), MatchedSelectors, CollectedElement),
   select_descendants(Selectors, MatchedSelectors, Children, ChildrenResults),
-  select_combinators([adjacent, sibling], MatchedSelectors, Context, [Sibling], AdjacentResults),
-  select_combinators([sibling], MatchedSelectors, Context, Siblings, SiblingsResults),
+  SiblingPosition is Position + 1,
+  select_combinators([adjacent], MatchedSelectors, Context, SiblingPosition, [Sibling], AdjacentResults),
+  select_combinators([sibling], MatchedSelectors, Context, SiblingPosition, [Sibling|Siblings], SiblingsResults),
   append([CollectedElement, ChildrenResults, AdjacentResults, SiblingsResults], Results).
-combine(_, [element(Tag, Attributes, Children)], Selectors, MatchedSelectors, Results) :-
+combine(_, _, [element(Tag, Attributes, Children)], Selectors, MatchedSelectors, Results) :-
   collect_element(element(Tag, Attributes, Children), MatchedSelectors, CollectedElement),
   select_descendants(Selectors, MatchedSelectors, Children, ChildrenResults),
   append(CollectedElement, ChildrenResults, Results).
@@ -51,12 +54,12 @@ select_descendants(Selectors, MatchedSelectors, Children, ChildrenResults) :-
   get_combinators(MatchedSelectors, Combinators),
   filter_selectors(Combinators, [descendant, child], ChildrenCombinators),
   append(DescendantSelectors, ChildrenCombinators, AllSelectors),
-  select(Children, Children, AllSelectors, ChildrenResults).
+  select(Children, 1, Children, AllSelectors, ChildrenResults).
 
-select_combinators(Types, MatchedSelectors, Context, Elements, Results) :-
+select_combinators(Types, MatchedSelectors, Context, Position, Elements, Results) :-
   get_combinators(MatchedSelectors, Combinators),
   filter_selectors(Combinators, Types, FilteredCombinators),
-  select(Context, Elements, FilteredCombinators, Results).
+  select(Context, Position, Elements, FilteredCombinators, Results).
 
 get_combinators([], []).
 get_combinators([selector(_, _, Combinator)|Selectors], [Combinator|Combinators]) :-
