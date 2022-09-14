@@ -44,6 +44,7 @@ match_pseudo_classes(Siblings, Position, Element, Selector, [PseudoClass|PseudoC
   match_pseudo_class(Siblings, Position, Element, Selector, PseudoClass),
   match_pseudo_classes(Siblings, Position, Element, Selector, PseudoClasses).
 
+match_pseudo_class(_, Position, _, _, nth_child(nth(0, Position))).
 match_pseudo_class(_, Position, _, _, nth_child(nth(A, B))) :-
   N is (Position - B) / A,
   integer(N).
