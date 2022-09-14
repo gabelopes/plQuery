@@ -1,25 +1,25 @@
-:- module(pseudo_selector, [
-  pseudo_selector//1
+:- module(pseudo_class, [
+  pseudo_class//1
 ]).
 
 :- use_module(selector, [selector//1]).
 :- use_module(an_plus_b, [an_plus_b//1]).
 :- use_module(whitespace, [whitespaces//1]).
 
-pseudo_selector_operator --> ":".
+pseudo_class_operator --> ":".
 
 left_parenthesis --> "(".
 
 right_parenthesis --> ")".
 
-pseudo_selector(PseudoSelector) -->
-  pseudo_selector_operator,
+pseudo_class(PseudoClasses) -->
+  pseudo_class_operator,
   pseudo_class(Name, ParameterFunctor),
   parameter(ParameterFunctor, Parameter), !,
   {
     Parameter = none ->
-      PseudoSelector = Name;
-      PseudoSelector =.. [Name, Parameter]
+      PseudoClasses = Name;
+      PseudoClasses =.. [Name, Parameter]
   }.
 
 pseudo_class('active', none) --> "active".
