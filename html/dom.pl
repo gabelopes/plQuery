@@ -6,10 +6,10 @@
 :- use_module(parser/selector).
 :- use_module(element_selector).
 
-parse_html(Html, DOM) :-
+parse_html(HTML, DOM) :-
   new_memory_file(File),
   open_memory_file(File, write, WriteStream),
-  write(WriteStream, Html),
+  write(WriteStream, HTML),
   close(WriteStream),
   open_memory_file(File, read, ReadStream),
   load_html(stream(ReadStream), DOM, []),

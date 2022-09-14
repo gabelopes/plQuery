@@ -55,27 +55,32 @@ single_selector(Selector) -->
 single_selector(Type, selector(Type, Selectors, Combinator)) -->
   compound_selectors(Selectors),
   space,
-  combinator(Combinator).
-single_selector(Type, selector(Type, Selectors, none)) -->
-  compound_selectors(Selectors).
+  (
+    combinator(Combinator);
+    { Combinator = none }
+  ).
 
 compound_selectors([Selector|Selectors]) -->
   compound_selector(Selector),
-  compound_selectors(Selectors).
-compound_selectors([Selector]) -->
-  compound_selector(Selector).
+  (
+    compound_selectors(Selectors);
+    { Selectors = [] }
+  ).
 
-compound_selector(Selector:PseudoClasses) -->
+compound_selector(CompoundSelector) -->
   selector(Selector),
-  pseudo_classes(PseudoClasses).
-compound_selector(Selector) -->
-  selector(Selector).
+  (
+    pseudo_classes(PseudoClasses) ->
+      { CompoundSelector = Selector:PseudoClasses };
+      { CompoundSelector = Selector }
+  ).
 
 pseudo_classes([PseudoClass|PseudoClasses]) -->
   pseudo_class(PseudoClass),
-  pseudo_classes(PseudoClasses).
-pseudo_classes([PseudoClass]) -->
-  pseudo_class(PseudoClass).
+  (
+    pseudo_classes(PseudoClasses);
+    { PseudoClasses = [] }
+  ).
 
 selector(Selector) -->
   selector_operator(Type), !,
@@ -100,8 +105,6 @@ selector(tag(Name)) --> identifier(Name), !.
 attribute_options([Option|Options]) -->
   attribute_option(Option),
   attribute_options(Options).
-attribute_options([Option]) -->
-  attribute_option(Option).
 attribute_options([]) --> "".
 
 combinator(Combinator) -->
