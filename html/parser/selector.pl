@@ -6,14 +6,10 @@
 :- use_module('../../utility/dcg').
 :- use_module(identifier).
 :- use_module(whitespace, [whitespaces//1]).
-:- use_module(pseudo_selector).
+:- use_module(pseudo_class).
 
 selector_operator(id) --> "#".
 selector_operator(class) --> ".".
-
-left_bracket --> "[".
-
-right_bracket --> "]".
 
 attribute_operator(equals) --> "=".
 attribute_operator(contains) --> "*=".
@@ -25,25 +21,25 @@ attribute_operator(equals_before_hyphen) --> "|=".
 attribute_option(case_insensitive) --> "i"; "I".
 attribute_option(case_sensitive) --> "s"; "S".
 
-combinator_operator(child) -->
-  whitespaces([no_new_line]),
-  ">".
-combinator_operator(adjacent) -->
-  whitespaces([no_new_line]),
-  "+".
-combinator_operator(sibling) -->
-  whitespaces([no_new_line]),
-  "~".
-combinator_operator(descendant) -->
-  whitespaces([no_new_line, required]).
+combinator_operator(child) --> ">".
+combinator_operator(adjacent) --> "+".
+combinator_operator(sibling) --> "~".
+combinator_operator(descendant) --> whitespaces([no_new_line, required]).
 
 all_operator --> "*".
 
+left_bracket --> "[".
+
+right_bracket --> "]".
+
 selector_separator --> ",".
 
-selectotrs([], [], []).
+space --> whitespaces([no_new_line]).
+
 selectors([Selector|Selectors]) -->
-  selector(Selector),
+  space,
+  single_selector(Selector),
+  space,
   (
     selector_separator ->
       selectors(Selectors);
@@ -51,70 +47,67 @@ selectors([Selector|Selectors]) -->
         Selectors = []
       }
   ).
-selectors([Selector]) -->
-  selector(Selector).
 selectors([]) --> "".
 
+single_selector(Selector) -->
+  single_selector(descendant, Selector).
+
+single_selector(Type, selector(Type, Selectors, Combinator)) -->
+  compound_selectors(Selectors),
+  space,
+  combinator(Combinator).
+single_selector(Type, selector(Type, Selectors, none)) -->
+  compound_selectors(Selectors).
+
+compound_selectors([Selector|Selectors]) -->
+  compound_selector(Selector),
+  compound_selectors(Selectors).
+compound_selectors([Selector]) -->
+  compound_selector(Selector).
+
+compound_selector(Selector:PseudoClasses) -->
+  selector(Selector),
+  pseudo_classes(PseudoClasses).
+compound_selector(Selector) -->
+  selector(Selector).
+
+pseudo_classes([PseudoClass|PseudoClasses]) -->
+  pseudo_class(PseudoClass),
+  pseudo_classes(PseudoClasses).
+pseudo_classes([PseudoClass]) -->
+  pseudo_class(PseudoClass).
+
 selector(Selector) -->
-  selector(descendant, Selector).
-
-selector(Type, selector(Type, CompoundSelectors, Combinator)) -->
-  whitespaces([no_new_line]),
-  compound_selectors(CompoundSelectors),
-  whitespaces([no_new_line]),
-  combinator(Combinator),
-  whitespaces([no_new_line]).
-
-compound_selectors([], [], []).
-compound_selectors([CompoundSelector|CompoundSelectors]) -->
-  compound_selector(CompoundSelector), !,
-  compound_selectors(CompoundSelectors).
-compound_selectors([CompoundSelector]) -->
-  compound_selector(CompoundSelector).
-compound_selectors([]) --> "".
-
-compound_selector(SimpleSelector:PseudoSelectors) -->
-  simple_selector(SimpleSelector), !,
-  pseudo_selectors(PseudoSelectors).
-compound_selector(SimpleSelector) -->
-  simple_selector(SimpleSelector).
-
-pseudo_selectors([], [], []).
-pseudo_selectors([PseudoSelector|PseudoSelectors]) -->
-  pseudo_selector(PseudoSelector), !,
-  pseudo_selectors(PseudoSelectors).
-pseudo_selectors([]) --> "".
-
-simple_selector(SimpleSelector) -->
   selector_operator(Type), !,
   identifier(Identifier),
-  { SimpleSelector =.. [Type, Identifier] }.
-simple_selector(attribute(Name, Operator, Value, Options)) -->
+  { Selector =.. [Type, Identifier] }, !.
+selector(attribute(Name, Operator, Value, Options)) -->
   left_bracket, !,
-  whitespaces([no_new_line]),
+  space,
   identifier(Name),
-  whitespaces([no_new_line]),
+  space,
   attribute_operator(Operator),
-  whitespaces([no_new_line]),
+  space,
   quoted_identifier(Value),
-  whitespaces([no_new_line]),
+  space,
   attribute_options(Options),
-  whitespaces([no_new_line]),
-  right_bracket.
-simple_selector(all) --> all_operator, !.
-simple_selector(tag(Name)) --> identifier(Name), !.
-simple_selector(all) --> "", !.
+  space,
+  right_bracket, !.
+selector(all) --> all_operator, !.
+selector(tag(Name)) --> identifier(Name), !.
+
 
 attribute_options([Option|Options]) -->
-  attribute_option(Option), !,
+  attribute_option(Option),
   attribute_options(Options).
-attribute_options([]) --> "", !.
+attribute_options([Option]) -->
+  attribute_option(Option).
+attribute_options([]) --> "".
 
 combinator(Combinator) -->
   combinator_operator(Type), !,
-  whitespaces([no_new_line]),
-  selector(Type, Combinator).
-combinator(none) --> "", !.
+  space,
+  single_selector(Type, Combinator).
 
 parse_query(Query, Selectors) :-
   parse(Query, selector:selectors(Selectors)).
