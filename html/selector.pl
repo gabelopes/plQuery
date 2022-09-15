@@ -2,7 +2,7 @@
   select/3
 ]).
 
-:- use_module(element_matcher, [matches/5]).
+:- use_module(matcher/matcher, [matches/5]).
 
 select([], _, []).
 select(_, [], []).
@@ -21,9 +21,10 @@ select(Context, Position, [Element|Siblings], Selectors, Results) :-
   NextPosition is Position + 1,
   select(Context, NextPosition, Siblings, Selectors, SiblingsResults), !,
   append(CombineResults, SiblingsResults, Results).
+% If not an element matching element/3, i.e., purely textual elements, then position does not change,
+% as these kinds of elements are not considered when counting position.
 select(Context, Position, [_|Siblings], Selectors, Results) :-
-  NextPosition is Position + 1,
-  select(Context, NextPosition, Siblings, Selectors, Results).
+  select(Context, Position, Siblings, Selectors, Results).
 
 combine(_, _, [], _, _, []).
 combine(_, _, [element(_, _, Children)|_], Selectors, [], Results) :-

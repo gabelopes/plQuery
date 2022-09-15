@@ -3,8 +3,8 @@
   query/3
 ]).
 
-:- use_module(parser/selector).
-:- use_module(element_selector).
+:- use_module(parser/selector, [parse_query/2]).
+:- use_module(selector).
 
 parse_html(HTML, DOM) :-
   new_memory_file(File),

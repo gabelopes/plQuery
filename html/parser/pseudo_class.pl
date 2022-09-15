@@ -22,31 +22,17 @@ pseudo_class(PseudoClasses) -->
       PseudoClasses =.. [Name, Parameter]
   }.
 
-pseudo_class('active', none) --> "active".
 pseudo_class('any_link', none) --> "any-link".
-pseudo_class('autofill', none) --> "autofill".
 pseudo_class('blank', none) --> "blank".
 pseudo_class('checked', none) --> "checked".
-pseudo_class('current', none) --> "current".
 pseudo_class('default', none) --> "default".
-pseudo_class('defined', none) --> "defined".
 pseudo_class('dir', any/direction) --> "dir".
 pseudo_class('disabled', none) --> "disabled".
 pseudo_class('empty', none) --> "empty".
 pseudo_class('enabled', none) --> "enabled".
 pseudo_class('first_child', none) --> "first-child".
 pseudo_class('first_of_type', none) --> "first-of-type".
-pseudo_class('first', none) --> "first".
-pseudo_class('fullscreen', none) --> "fullscreen".
-pseudo_class('future', none) --> "future".
-pseudo_class('focus_visible', none) --> "focus-visible".
-pseudo_class('focus_within', none) --> "focus-within".
-pseudo_class('focus', none) --> "focus".
 pseudo_class('has()', none) --> "has()".
-pseudo_class('host', none) --> "host".
-pseudo_class('host()', none) --> "host()".
-pseudo_class('host_context()', none) --> "host-context()".
-pseudo_class('hover', none) --> "hover".
 pseudo_class('indeterminate', none) --> "indeterminate".
 pseudo_class('in_range', none) --> "in-range".
 pseudo_class('invalid', none) --> "invalid".
@@ -54,7 +40,6 @@ pseudo_class('is()', none) --> "is()".
 pseudo_class('lang', any/lang) --> "lang".
 pseudo_class('last_child', none) --> "last-child".
 pseudo_class('last_of_type', none) --> "last-of-type".
-pseudo_class('left', none) --> "left".
 pseudo_class('link', none) --> "link".
 pseudo_class('local_link', none) --> "local-link".
 pseudo_class('not', selector:selector) --> "not".
@@ -68,23 +53,13 @@ pseudo_class('only_child', none) --> "only-child".
 pseudo_class('only_of_type', none) --> "only-of-type".
 pseudo_class('optional', none) --> "optional".
 pseudo_class('out_of_range', none) --> "out-of-range".
-pseudo_class('past', none) --> "past".
-pseudo_class('picture_in_picture', none) --> "picture-in-picture".
 pseudo_class('placeholder_shown', none) --> "placeholder-shown".
-pseudo_class('paused', none) --> "paused".
-pseudo_class('playing', none) --> "playing".
 pseudo_class('read_only', none) --> "read-only".
 pseudo_class('read_write', none) --> "read-write".
 pseudo_class('required', none) --> "required".
-pseudo_class('right', none) --> "right".
 pseudo_class('root', none) --> "root".
 pseudo_class('scope', none) --> "scope".
-pseudo_class('state()', none) --> "state()".
-pseudo_class('target_within', none) --> "target-within".
-pseudo_class('target', none) --> "target".
-pseudo_class('user_invalid', none) --> "user-invalid".
 pseudo_class('valid', none) --> "valid".
-pseudo_class('visited', none) --> "visited".
 pseudo_class('where()', none) --> "where()".
 
 parameter(none, none) --> "".
