@@ -12,11 +12,11 @@
 n --> "n".
 
 % Basic rules
-an_plus_b(nth(2, 0)) --> "even".
-an_plus_b(nth(2, 1)) --> "odd".
+an_plus_b(an_plus_b(2, 0)) --> "even".
+an_plus_b(an_plus_b(2, 1)) --> "odd".
 
 % Where A is the Step and B is the Offset (An+B)
-an_plus_b(nth(Step, Offset)) -->
+an_plus_b(an_plus_b(Step, Offset)) -->
   lax_integer(Step),
   n,
   whitespaces([no_new_line]),
@@ -26,9 +26,9 @@ an_plus_b(nth(Step, Offset)) -->
   { Offset is Sign * B }.
 
 % Step only
-an_plus_b(nth(Step, 0)) -->
+an_plus_b(an_plus_b(Step, 0)) -->
   lax_integer(Step),
   n.
 
 % Offset only
-an_plus_b(nth(0, Offset)) --> unsigned_integer(Offset).
+an_plus_b(an_plus_b(0, Offset)) --> unsigned_integer(Offset).

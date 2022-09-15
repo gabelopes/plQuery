@@ -23,7 +23,7 @@ DONE :nth-child()
 RULE :nth-col()
 DONE :nth-last-child()
 RULE :nth-last-col()
-RULE :nth-last-of-type()
+DONE :nth-last-of-type()
 DONE :nth-of-type()
      :only-child
      :only-of-type
