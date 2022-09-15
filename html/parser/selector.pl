@@ -21,9 +21,9 @@ attribute_operator(equals_before_hyphen) --> "|=".
 attribute_option(case_insensitive) --> "i"; "I".
 attribute_option(case_sensitive) --> "s"; "S".
 
-combinator_operator(child) --> ">".
-combinator_operator(adjacent) --> "+".
-combinator_operator(sibling) --> "~".
+combinator_operator(child) --> space, ">".
+combinator_operator(adjacent) --> space, "+".
+combinator_operator(sibling) --> space, "~".
 combinator_operator(descendant) --> whitespaces([no_new_line, required]).
 
 all_operator --> "*".
@@ -54,7 +54,6 @@ single_selector(Selector) -->
 
 single_selector(Type, selector(Type, Selectors, Combinator)) -->
   compound_selectors(Selectors),
-  space,
   (
     combinator(Combinator);
     { Combinator = none }
@@ -74,6 +73,8 @@ compound_selector(CompoundSelector) -->
       { CompoundSelector = Selector:PseudoClasses };
       { CompoundSelector = Selector }
   ).
+compound_selector(all:PseudoClasses) -->
+  pseudo_classes(PseudoClasses).
 
 pseudo_classes([PseudoClass|PseudoClasses]) -->
   pseudo_class(PseudoClass),
