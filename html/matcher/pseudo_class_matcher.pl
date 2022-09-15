@@ -31,6 +31,12 @@ match(Siblings, Position, Element, Selector, nth_last_of_type(Expression)) :-
 match(Siblings, Position, _, _, last_child) :-
   elements_length(Siblings, Position).
 
+match(Siblings, _, _, _, only_child) :-
+  elements_length(Siblings, 1).
+
+match(Siblings, _, _, Selector, only_of_type) :-
+  filter(Siblings, Selector, [_]).
+
 is_natural(Number) :-
   Number >= 0,
   integer(Number).

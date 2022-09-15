@@ -25,8 +25,8 @@ DONE :nth-last-child()
 RULE :nth-last-col()
 DONE :nth-last-of-type()
 DONE :nth-of-type()
-     :only-child
-     :only-of-type
+DONE :only-child
+DONE :only-of-type
      :optional
      :out-of-range
      :placeholder-shown
