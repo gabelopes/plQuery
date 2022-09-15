@@ -4,7 +4,7 @@
      :default
 RULE :dir()
      :disabled
-     :empty
+DONE :empty
      :enabled
 DONE :first-child
      :first-of-type
@@ -21,7 +21,7 @@ DONE :last-child
      :not()
 DONE :nth-child()
 RULE :nth-col()
-RULE :nth-last-child()
+DONE :nth-last-child()
 RULE :nth-last-col()
 RULE :nth-last-of-type()
 RULE :nth-of-type()
