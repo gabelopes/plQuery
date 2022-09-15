@@ -1,28 +1,28 @@
-:active
+:active (Out-of-scope, depends on user interaction)
 :any-link
-:autofill
-:blank
+:autofill (Out-of-scope, depends on browser interaction)
+:blank Experimental
 :checked
-:current
+:current Experimental (Out-of-scope, part of WebVTT)
 :default
-:defined
-:dir()
+:defined (Out-of-scope, depends on JavaScript interaction)
+:dir() Experimental
 :disabled
 :empty
 :enabled
-:first
+:first (Out-of-scope, depends on CSS)
 :first-child
 :first-of-type
-:fullscreen
-:future
-:focus
-:focus-visible
-:focus-within
-:has()
-:host
-:host()
-:host-context()
-:hover
+:fullscreen (Out-of-scope, depends on user interaction)
+:future Experimental (Out-of-scope, part of WebVTT)
+:focus (Out-of-scope, depends on user interaction or visible rendering)
+:focus-visible (Out-of-scope, depends on user interaction or visible rendering)
+:focus-within (Out-of-scope, depends on user interaction or visible rendering)
+:has() Experimental
+:host (Out-of-scope, part of Web Elements, depends on JavaScript interaction)
+:host() (Out-of-scope, part of Web Elements, depends on JavaScript interaction)
+:host-context() Experimental (Out-of-scope, part of Web Elements, depends on JavaScript interaction)
+:hover (Out-of-scope, depends on user interaction or visible rendering)
 :indeterminate
 :in-range
 :invalid
@@ -30,35 +30,36 @@
 :lang()
 :last-child
 :last-of-type
-:left
+:left (Out-of-scope, depends on CSS)
 :link
-:local-link
+:local-link Experimental
+:modal (Out-of-scope, depends on user interaction)
 :not()
 :nth-child()
-:nth-col()
+:nth-col() Experimental
 :nth-last-child()
-:nth-last-col()
+:nth-last-col() Experimental
 :nth-last-of-type()
 :nth-of-type()
 :only-child
 :only-of-type
 :optional
 :out-of-range
-:past
-:picture-in-picture
+:past Experimental (Out-of-scope, part of WebVTT)
+:picture-in-picture (Out-of-scope, depends on user interaction)
 :placeholder-shown
-:paused
-:playing
+:paused (Out-of-scope, depends on user interaction) --> Can possibly be implemented depending on media specs
+:playing (Out-of-scope, depends on user interaction) --> Can possibly be implemented depending on media specs
 :read-only
 :read-write
 :required
-:right
+:right (Out-of-scope, depends on CSS)
 :root
 :scope
-:state()
-:target
-:target-within
-:user-invalid
+:state() Experimental (Out-of-scope, no description)
+:target (Out-of-scope, depends on the URL of said page)
+:target-within Experimental (Out-of-scope, depends on the URL of said page)
+:user-invalid Experimental (Out-of-scope, depends on user interaction)
 :valid
-:visited
+:visited (Out-of-scope, depends on browser interaction)
 :where()
